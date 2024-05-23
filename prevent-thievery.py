@@ -20,3 +20,11 @@ AGENT_SYMBOL = 'A'
 HOLE_SYMBOL = 'H'
 SPIKE_SYMBOL = 'S'
 EMPTY_SYMBOL = ' '
+
+# Load grid world images and scale them to 50x50
+agent_img = pygame.transform.scale(pygame.image.load('agent.png'), (60, 60))
+guard_img = pygame.transform.scale(pygame.image.load('guard.png'), (50, 50))
+chest_img = pygame.transform.scale(pygame.image.load('chest.png'), (50, 50))
+key_img = pygame.transform.scale(pygame.image.load('key.png'), (50, 50))
+spike_img = pygame.transform.scale(pygame.image.load('spike.png'), (50, 50))
+hole_img = pygame.transform.scale(pygame.image.load('hole.png'), (50, 50))
