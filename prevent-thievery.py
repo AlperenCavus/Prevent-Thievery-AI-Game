@@ -28,3 +28,16 @@ chest_img = pygame.transform.scale(pygame.image.load('chest.png'), (50, 50))
 key_img = pygame.transform.scale(pygame.image.load('key.png'), (50, 50))
 spike_img = pygame.transform.scale(pygame.image.load('spike.png'), (50, 50))
 hole_img = pygame.transform.scale(pygame.image.load('hole.png'), (50, 50))
+
+# Initialize Q-table
+Q = np.zeros((GRID_SIZE, GRID_SIZE, NUM_ACTIONS))
+
+# Load experience from JSON file
+def load_experience(filename):
+    with open(filename, 'r') as file:
+        return json.load(file)
+
+# Save experience to JSON file
+def save_experience(filename, experience):
+    with open(filename, 'w') as file:
+        json.dump(experience, file)
