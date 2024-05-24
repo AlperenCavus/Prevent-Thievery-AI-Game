@@ -41,3 +41,17 @@ def load_experience(filename):
 def save_experience(filename, experience):
     with open(filename, 'w') as file:
         json.dump(experience, file)
+
+# Define agent class
+class Agent:
+    def __init__(self, position=(0, 0)):
+        self.position = position
+        self.has_key = False
+
+    def choose_action(self, state, epsilon):
+        if random.uniform(0, 1) < epsilon:
+            return np.random.randint(NUM_ACTIONS)
+        else:
+            return np.argmax(Q[state[0], state[1]])
+
+    
