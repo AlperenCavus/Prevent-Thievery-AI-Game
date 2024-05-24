@@ -54,4 +54,14 @@ class Agent:
         else:
             return np.argmax(Q[state[0], state[1]])
 
+    def update_position(self, action):
+        if action == 0 and self.position[0] > 0:
+            self.position = (self.position[0] - 1, self.position[1])
+        elif action == 1 and self.position[0] < GRID_SIZE - 1:
+            self.position = (self.position[0] + 1, self.position[1])
+        elif action == 2 and self.position[1] > 0:
+            self.position = (self.position[0], self.position[1] - 1)
+        elif action == 3 and self.position[1] < GRID_SIZE - 1:
+            self.position = (self.position[0], self.position[1] + 1)
+
     
