@@ -64,4 +64,21 @@ class Agent:
         elif action == 3 and self.position[1] < GRID_SIZE - 1:
             self.position = (self.position[0], self.position[1] + 1)
 
+# Define guard class
+class Guard:
+    def __init__(self, position=(GRID_SIZE - 1, GRID_SIZE - 1), hole_positions=None, spike_positions=None):
+        self.position = position
+        self.last_agent_position = None
+        self.directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Right, Down, Left, Up
+        self.hole_positions = hole_positions  # Store hole_positions
+        self.spike_positions = spike_positions  # Store spike_positions
+
+    def move(self, agent_position):
+        self.last_agent_position = agent_position
+        self.astar_move(agent_position)
+
+        # Ensure the guard doesn't step on holes or spikes while moving
+        while self.position in self.hole_positions or self.position in self.spike_positions:
+            self.astar_move(agent_position)
+
     
