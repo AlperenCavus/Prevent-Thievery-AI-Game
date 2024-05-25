@@ -145,6 +145,25 @@ class Guard:
         if self.is_valid_position(new_position) and new_position not in self.hole_positions and new_position not in self.spike_positions:
             self.position = new_position
 
+# Define grid world environment
+class GridWorld:
+    def __init__(self, agent, guard, chest_position, key_position, spike_positions, hole_positions):
+        self.agent = agent
+        self.guard = guard
+        self.chest_position = chest_position
+        self.key_position = key_position
+        self.spike_positions = spike_positions
+        self.hole_positions = hole_positions
+        self.grid = np.full((GRID_SIZE, GRID_SIZE), EMPTY_SYMBOL)
+        self.grid[self.agent.position] = AGENT_SYMBOL
+        self.grid[self.guard.position] = GUARD_SYMBOL
+        self.grid[self.chest_position] = CHEST_SYMBOL
+        self.grid[self.key_position] = KEY_SYMBOL
+        for spike_position in self.spike_positions:
+            self.grid[spike_position] = SPIKE_SYMBOL
+        for hole_position in self.hole_positions:
+            self.grid[hole_position] = HOLE_SYMBOL
+
     
         
 
