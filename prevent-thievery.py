@@ -81,4 +81,34 @@ class Guard:
         while self.position in self.hole_positions or self.position in self.spike_positions:
             self.astar_move(agent_position)
 
+    def astar_move(self, agent_position):
+        # Introduce a probability to make random moves
+        if random.random() < 0.3:  # Adjust the probability as needed
+            self.random_move()
+            return
+
+        # Otherwise, follow the A* path
+        open_list = []
+        heapq.heappush(open_list, (0, self.position))
+        came_from = {}
+        cost_so_far = {}
+        came_from[self.position] = None
+        cost_so_far[self.position] = 0
+
+        while open_list:
+            current_cost, current_node = heapq.heappop(open_list)
+
+            if current_node == agent_position:
+                break
+
+            for next_direction in self.directions:
+                next_node = (current_node[0] + next_direction[0], current_node[1] + next_direction[1])
+
+                if not (0 <= next_node[0] < GRID_SIZE and 0 <= next_node[1] < GRID_SIZE):
+                    continue
+
+                if next_node in self.hole_positions or next_node in self.spike_positions:
+                    # Avoid holes and spikes
+                    continue
+
     
