@@ -130,5 +130,9 @@ class Guard:
             next_position = path[-1]
             self.position = next_position
 
+    def heuristic(self, a, b):
+        return math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
+        
+
 
     
