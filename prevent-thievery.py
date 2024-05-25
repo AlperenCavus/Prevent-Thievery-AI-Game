@@ -111,4 +111,12 @@ class Guard:
                     # Avoid holes and spikes
                     continue
 
+                new_cost = cost_so_far[current_node] + 1
+                if next_node not in cost_so_far or new_cost < cost_so_far[next_node]:
+                    cost_so_far[next_node] = new_cost
+                    priority = new_cost + self.heuristic(agent_position, next_node)
+                    heapq.heappush(open_list, (priority, next_node))
+                    came_from[next_node] = current_node
+
+
     
