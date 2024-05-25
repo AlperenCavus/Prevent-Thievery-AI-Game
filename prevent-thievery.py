@@ -118,5 +118,17 @@ class Guard:
                     heapq.heappush(open_list, (priority, next_node))
                     came_from[next_node] = current_node
 
+        # Reconstruct path here
+        path = []
+        current = agent_position
+        while current != self.position:
+            path.append(current)
+            current = came_from[current]
+
+        # Move the guard
+        if path:
+            next_position = path[-1]
+            self.position = next_position
+
 
     
