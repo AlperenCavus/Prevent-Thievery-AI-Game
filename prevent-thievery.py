@@ -132,6 +132,9 @@ class Guard:
 
     def heuristic(self, a, b):
         return math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
+
+    def is_valid_position(self, position):
+        return 0 <= position[0] < GRID_SIZE and 0 <= position[1] < GRID_SIZE
         
 
 
