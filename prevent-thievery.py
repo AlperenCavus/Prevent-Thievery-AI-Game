@@ -135,6 +135,17 @@ class Guard:
 
     def is_valid_position(self, position):
         return 0 <= position[0] < GRID_SIZE and 0 <= position[1] < GRID_SIZE
+
+    def random_move(self):
+        # Choose a random direction
+        dx, dy = random.choice(self.directions)
+        new_position = (self.position[0] + dx, self.position[1] + dy)
+        
+        # Ensure the new position is valid and doesn't step on holes or spikes
+        if self.is_valid_position(new_position) and new_position not in self.hole_positions and new_position not in self.spike_positions:
+            self.position = new_position
+
+    
         
 
 
