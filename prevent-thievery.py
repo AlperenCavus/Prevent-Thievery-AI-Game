@@ -185,6 +185,19 @@ class GridWorld:
     def get_state(self):
         return self.agent.position
 
+    def check_game_over(self):
+        if self.agent.position == self.guard.position:
+            return True, REWARDS['guard']
+        if self.agent.position in self.spike_positions:
+            return True, REWARDS['spike']
+        if self.agent.position in self.hole_positions:
+            return True, REWARDS['hole']
+        if self.agent.position == self.chest_position and not self.agent.has_key:
+            return False, REWARDS['empty']
+        if self.agent.position == self.chest_position and self.agent.has_key:
+            return False, REWARDS['chest']
+        return False, 0
+
     
         
 
