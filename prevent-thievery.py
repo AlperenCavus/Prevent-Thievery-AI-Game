@@ -179,6 +179,12 @@ class GridWorld:
         for hole_position in self.hole_positions:
             self.grid[hole_position] = HOLE_SYMBOL
 
+    def is_valid_position(self, position):
+        return 0 <= position[0] < GRID_SIZE and 0 <= position[1] < GRID_SIZE
+
+    def get_state(self):
+        return self.agent.position
+
     
         
 
