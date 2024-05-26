@@ -198,6 +198,47 @@ class GridWorld:
             return False, REWARDS['chest']
         return False, 0
 
+    def step(self, action):
+        self.agent.update_position(action)
+    
+        # Check if the agent collects the key
+        if self.agent.position == self.key_position:
+            self.agent.has_key = True
+            self.grid[self.key_position] = EMPTY_SYMBOL
+    
+        # Check if the agent collects the chest
+        if self.agent.position == self.chest_position:
+            if self.agent.has_key:
+                self.agent.has_key = False
+                self.grid[self.chest_position] = EMPTY_SYMBOL
+                return self.agent.position, REWARDS['chest'], False, True
+            else:
+                return self.agent.position, REWARDS['empty'], False, False
+    
+        # Check if game over due to spike or hole
+        if self.agent.position in self.spike_positions:
+            return self.agent.position, REWARDS['spike'], True, False
+        if self.agent.position in self.hole_positions:
+            return self.agent.position, REWARDS['hole'], True, False
+    
+        # Move guard
+        self.guard.move(self.agent.position)
+    
+        # Check if the agent collides with the guard
+        if self.agent.position == self.guard.position:
+            return self.agent.position, REWARDS['guard'], True, False
+    
+        # Apply walking cost
+        reward = REWARDS['empty']
+    
+        # Check if the agent reaches the starting position with chest collected
+        if self.agent.position == (0, 0) and not self.grid[self.chest_position] == CHEST_SYMBOL:
+            reward += REWARDS['finish']
+            return self.agent.position, reward, True, False
+    
+        # Otherwise, return the current state, reward, and game-over status
+        return self.agent.position, reward, False, False
+
     
         
 
