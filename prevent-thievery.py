@@ -164,6 +164,21 @@ class GridWorld:
         for hole_position in self.hole_positions:
             self.grid[hole_position] = HOLE_SYMBOL
 
+    def reset(self):
+        self.agent.position = (0, 0)
+        self.agent.has_key = False
+        self.guard.position = (GRID_SIZE - 1, GRID_SIZE - 1)
+        self.guard.last_agent_position = None
+        self.grid = np.full((GRID_SIZE, GRID_SIZE), EMPTY_SYMBOL)
+        self.grid[self.agent.position] = AGENT_SYMBOL
+        self.grid[self.guard.position] = GUARD_SYMBOL
+        self.grid[self.chest_position] = CHEST_SYMBOL
+        self.grid[self.key_position] = KEY_SYMBOL
+        for spike_position in self.spike_positions:
+            self.grid[spike_position] = SPIKE_SYMBOL
+        for hole_position in self.hole_positions:
+            self.grid[hole_position] = HOLE_SYMBOL
+
     
         
 
