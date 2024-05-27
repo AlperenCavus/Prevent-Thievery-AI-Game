@@ -272,6 +272,71 @@ class GridWorld:
 
         pygame.display.flip()  # Update the display
 
+def generate_easy_map():
+    # Generate chest and key positions
+    chest_position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+    key_position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+
+    # Generate spike positions
+    spike_positions = []
+    while len(spike_positions) < 4:
+        position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+        if position not in spike_positions and position != chest_position and position != key_position:
+            spike_positions.append(position)
+
+    # Generate hole positions
+    hole_positions = []
+    while len(hole_positions) < 4:
+        position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+        if position not in hole_positions and position not in spike_positions and position != chest_position and position != key_position:
+            hole_positions.append(position)
+
+    return chest_position, key_position, spike_positions, hole_positions
+
+def generate_moderate_map():
+    # Generate chest and key positions
+    chest_position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+    key_position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+
+    # Generate spike positions
+    spike_positions = []
+    while len(spike_positions) < 6:
+        position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+        if position not in spike_positions and position != chest_position and position != key_position:
+            spike_positions.append(position)
+
+    # Generate hole positions
+    hole_positions = []
+    while len(hole_positions) < 6:
+        position = (random.randint(1, 9), random.randint(1, GRID_SIZE-1))
+        if position not in hole_positions and position not in spike_positions and position != chest_position and position != key_position:
+            hole_positions.append(position)
+
+    return chest_position, key_position, spike_positions, hole_positions
+
+def generate_hard_map():
+    # Generate chest and key positions
+    chest_position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+    key_position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+
+    # Generate spike positions
+    spike_positions = []
+    while len(spike_positions) < 8:
+        position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+        if position not in spike_positions and position != chest_position and position != key_position:
+            spike_positions.append(position)
+
+    # Generate hole positions
+    hole_positions = []
+    while len(hole_positions) < 8:
+        position = (random.randint(1, GRID_SIZE-1), random.randint(1, GRID_SIZE-1))
+        if position not in hole_positions and position not in spike_positions and position != chest_position and position != key_position:
+            hole_positions.append(position)
+
+    return chest_position, key_position, spike_positions, hole_positions
+    
+    
+
     
         
 
