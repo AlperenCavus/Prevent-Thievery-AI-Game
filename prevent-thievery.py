@@ -239,6 +239,39 @@ class GridWorld:
         # Otherwise, return the current state, reward, and game-over status
         return self.agent.position, reward, False, False
 
+    def render(self):
+        screen = pygame.display.get_surface()  # Get the screen surface
+        screen.fill((255, 255, 255))  # Fill the screen with white color
+        block_size = 50
+
+        # Draw grid lines
+        for x in range(GRID_SIZE):
+            pygame.draw.line(screen, (0, 0, 0), (x * block_size, 0), (x * block_size, screen.get_height()))
+        for y in range(GRID_SIZE):
+            pygame.draw.line(screen, (0, 0, 0), (0, y * block_size), (screen.get_width(), y * block_size))
+
+        # Render objects
+        for i in range(GRID_SIZE):
+            for j in range(GRID_SIZE):
+                if self.grid[i, j] == CHEST_SYMBOL:
+                    screen.blit(chest_img, (j * block_size, i * block_size))
+                elif self.grid[i, j] == KEY_SYMBOL:
+                    screen.blit(key_img, (j * block_size, i * block_size))
+                elif self.grid[i, j] == SPIKE_SYMBOL:
+                    screen.blit(spike_img, (j * block_size, i * block_size))
+                elif self.grid[i, j] == HOLE_SYMBOL:
+                    screen.blit(hole_img, (j * block_size, i * block_size))
+
+        # Render agent
+        agent_position = self.agent.position
+        screen.blit(agent_img, (agent_position[1] * block_size, agent_position[0] * block_size))
+
+        # Render guard
+        guard_position = self.guard.position
+        screen.blit(guard_img, (guard_position[1] * block_size, guard_position[0] * block_size))
+
+        pygame.display.flip()  # Update the display
+
     
         
 
