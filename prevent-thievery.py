@@ -334,6 +334,78 @@ def generate_hard_map():
             hole_positions.append(position)
 
     return chest_position, key_position, spike_positions, hole_positions
+
+def main(difficulty_level):
+    agent = Agent()
+    if difficulty_level == "easy":
+        chest_position, key_position, spike_positions, hole_positions = generate_easy_map()
+    elif difficulty_level == "moderate":
+        chest_position, key_position, spike_positions, hole_positions = generate_moderate_map()
+    elif difficulty_level == "hard":
+        chest_position, key_position, spike_positions, hole_positions = generate_hard_map()
+    else:
+        raise ValueError("Invalid difficulty level")
+
+    guard = Guard(position=(GRID_SIZE - 2, GRID_SIZE - 2), hole_positions=hole_positions, spike_positions=spike_positions)
+    grid_world = GridWorld(agent, guard, chest_position, key_position, spike_positions, hole_positions)
+    epsilon = 0.1
+
+    running = True
+    game_over = False
+    success = False
+
+    screen_width = GRID_SIZE * 50
+    screen_height = GRID_SIZE * 50
+    screen = pygame.display.set_mode((screen_width, screen_height))
+
+    pygame.mixer.music.load('ost.mp3')
+    pygame.mixer.music.set_volume(0.15)
+    pygame.mixer.music.play(-1)
+
+
+    clock = pygame.time.Clock()
+    FPS = 3000
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        if not game_over:
+            state = grid_world.get_state()
+            action = agent.choose_action(state, epsilon)
+            next_state, reward, done, chest_collected = grid_world.step(action)
+
+            current_q_value = Q[state[0], state[1], action]
+            next_max_q_value = np.max(Q[next_state[0], next_state[1]])
+            new_q_value = current_q_value + 0.1 * (reward + next_max_q_value - current_q_value)
+            Q[state[0], state[1], action] = new_q_value
+
+            grid_world.agent.position = next_state
+
+            screen.fill((255, 255, 255))
+            grid_world.render()
+
+            if done:
+                grid_world.reset()
+            elif chest_collected and grid_world.agent.position == (chest_position[0], chest_position[1]):
+                success = True
+                game_over = True
+
+        else:
+            if success:
+                font = pygame.font.SysFont(None, 55)
+                text = font.render("Successful", True, (0, 255, 0))
+                screen.blit(text, (screen_width // 2 - text.get_width() // 2, screen_height // 2 - text.get_height() // 2))
+                pygame.display.flip()
+
+        clock.tick(FPS)
+
+    save_experience('q_table.json', Q.tolist())
+
+if __name__ == "__main__":
+    difficulty_level = "hard"  # Specify the difficulty level here (easy, moderate, or hard)
+    main(difficulty_level)
     
     
 
