@@ -397,7 +397,8 @@ def main(difficulty_level):
             next_max_q_value = np.max(Q[next_state[0], next_state[1]])
             new_q_value = current_q_value + 0.1 * (reward + next_max_q_value - current_q_value)
             Q[state[0], state[1], action] = new_q_value
-
+            # Save the updated Q-table to JSON file
+            save_experience('q_table.json', Q.tolist())
             grid_world.agent.position = next_state
 
             screen.fill((255, 255, 255))
