@@ -202,45 +202,48 @@ class GridWorld:
         return False, 0
 
     def step(self, action):
+        # Move the agent based on the action taken
         self.agent.update_position(action)
-
+    
+        # Initialize reward
+        reward = REWARDS['empty']
+    
         # Check if the agent collects the key
-        if self.agent.position == self.key_position:
+        if self.agent.position == self.key_position and not self.agent.has_key:
             self.agent.has_key = True
             self.grid[self.key_position] = EMPTY_SYMBOL
-            self.reward_points += REWARDS['key']  # Add key reward to total reward points
-
+            reward += REWARDS['key']  # Add key reward
+    
         # Check if the agent collects the chest
         if self.agent.position == self.chest_position:
             if self.agent.has_key:
                 self.agent.has_key = False
                 self.grid[self.chest_position] = EMPTY_SYMBOL
-                self.reward_points += REWARDS['chest']  # Add chest reward to total reward points
-                return self.agent.position, REWARDS['chest'], False, True
+                reward += REWARDS['chest']  # Add chest reward
+                return self.agent.position, reward, False, True
             else:
-                return self.agent.position, REWARDS['empty'], False, False
-
+                return self.agent.position, reward, False, False
+    
         # Check if game over due to spike or hole
         if self.agent.position in self.spike_positions:
-            self.reward_points += REWARDS['spike']  # Add spike reward to total reward points
-            return self.agent.position, REWARDS['spike'], True, False
+            reward += REWARDS['spike']  # Add spike reward
+            return self.agent.position, reward, True, False
         if self.agent.position in self.hole_positions:
-            self.reward_points += REWARDS['hole']  # Add hole reward to total reward points
-            return self.agent.position, REWARDS['hole'], True, False
-
+            reward += REWARDS['hole']  # Add hole reward
+            return self.agent.position, reward, True, False
+    
         # Move guard
         self.guard.move(self.agent.position)
-
+    
         # Check if the agent collides with the guard
         if self.agent.position == self.guard.position:
-            self.reward_points += REWARDS['guard']  # Add guard reward to total reward points
-            return self.agent.position, REWARDS['guard'], True, False
-
+            reward += REWARDS['guard']  # Add guard reward
+            return self.agent.position, reward, True, False
+    
         # Apply walking cost
-        reward = REWARDS['empty']
-
+        self.reward_points += reward  # Add the current step reward to total reward points
+    
         # Otherwise, return the current state, reward, and game-over status
-        self.reward_points += REWARDS['empty']  # Add empty step reward to total reward points
         return self.agent.position, reward, False, False
 
 
