@@ -163,6 +163,7 @@ class GridWorld:
             self.grid[spike_position] = SPIKE_SYMBOL
         for hole_position in self.hole_positions:
             self.grid[hole_position] = HOLE_SYMBOL
+        self.reward_points = 0
 
     def reset(self):
         self.agent.position = (0, 0)
@@ -178,6 +179,8 @@ class GridWorld:
             self.grid[spike_position] = SPIKE_SYMBOL
         for hole_position in self.hole_positions:
             self.grid[hole_position] = HOLE_SYMBOL
+        self.reward_points = 0     
+          
 
     def is_valid_position(self, position):
         return 0 <= position[0] < GRID_SIZE and 0 <= position[1] < GRID_SIZE
@@ -200,44 +203,49 @@ class GridWorld:
 
     def step(self, action):
         self.agent.update_position(action)
-    
+
         # Check if the agent collects the key
         if self.agent.position == self.key_position:
             self.agent.has_key = True
             self.grid[self.key_position] = EMPTY_SYMBOL
-    
+            self.reward_points += REWARDS['key']  # Add key reward to total reward points
+
         # Check if the agent collects the chest
         if self.agent.position == self.chest_position:
             if self.agent.has_key:
                 self.agent.has_key = False
                 self.grid[self.chest_position] = EMPTY_SYMBOL
+                self.reward_points += REWARDS['chest']  # Add chest reward to total reward points
                 return self.agent.position, REWARDS['chest'], False, True
             else:
                 return self.agent.position, REWARDS['empty'], False, False
-    
+
         # Check if game over due to spike or hole
         if self.agent.position in self.spike_positions:
+            self.reward_points += REWARDS['spike']  # Add spike reward to total reward points
             return self.agent.position, REWARDS['spike'], True, False
         if self.agent.position in self.hole_positions:
+            self.reward_points += REWARDS['hole']  # Add hole reward to total reward points
             return self.agent.position, REWARDS['hole'], True, False
-    
+
         # Move guard
         self.guard.move(self.agent.position)
-    
+
         # Check if the agent collides with the guard
         if self.agent.position == self.guard.position:
+            self.reward_points += REWARDS['guard']  # Add guard reward to total reward points
             return self.agent.position, REWARDS['guard'], True, False
-    
+
         # Apply walking cost
         reward = REWARDS['empty']
-    
-        # Check if the agent reaches the starting position with chest collected
-        if self.agent.position == (0, 0) and not self.grid[self.chest_position] == CHEST_SYMBOL:
-            reward += REWARDS['finish']
-            return self.agent.position, reward, True, False
-    
+
         # Otherwise, return the current state, reward, and game-over status
+        self.reward_points += REWARDS['empty']  # Add empty step reward to total reward points
         return self.agent.position, reward, False, False
+
+
+
+    
 
     def render(self):
         screen = pygame.display.get_surface()  # Get the screen surface
@@ -270,6 +278,12 @@ class GridWorld:
         guard_position = self.guard.position
         screen.blit(guard_img, (guard_position[1] * block_size, guard_position[0] * block_size))
 
+        # Render reward points
+        font = pygame.font.Font(None, 36)
+        reward_color = (0, 128, 0) if self.reward_points >= 0 else (255, 0, 0)
+        reward_text = "{:.2f}".format(self.reward_points)
+        text = font.render("Reward: " + reward_text, True, reward_color)
+        screen.blit(text, (10, 10))
         pygame.display.flip()  # Update the display
 
 def generate_easy_map():
