@@ -12,7 +12,7 @@ pygame.init()
 GRID_SIZE = 15
 NUM_ACTIONS = 4
 ACTIONS = ['up', 'down', 'left', 'right']
-REWARDS = {'empty': -0.9, 'key': 50, 'chest': 100, 'hole': -50, 'spike': -30, 'guard': -100, 'finish': 120}
+REWARDS = {'empty': -50, 'key': 500, 'chest': 2000, 'hole': -600, 'spike': -500, 'guard': -900, 'finish': 1200}
 GUARD_SYMBOL = 'G'
 CHEST_SYMBOL = 'C'
 KEY_SYMBOL = 'K'
