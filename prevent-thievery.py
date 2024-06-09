@@ -96,7 +96,7 @@ class Guard:
         cost_so_far[self.position] = 0
 
         while open_list:
-            current_cost, current_node = heapq.heappop(open_list)
+            _, current_node = heapq.heappop(open_list)
 
             if current_node == agent_position:
                 break
@@ -159,12 +159,15 @@ class GridWorld:
         self.grid[self.guard.position] = GUARD_SYMBOL
         self.grid[self.chest_position] = CHEST_SYMBOL
         self.grid[self.key_position] = KEY_SYMBOL
+        self.previous_chest_distance = abs(chest_position[0] - agent.position[0]) + abs(chest_position[1] - agent.position[1])
+        self.previous_key_distance = abs(key_position[0] - agent.position[0]) + abs(key_position[1] - agent.position[1])
         for spike_position in self.spike_positions:
             self.grid[spike_position] = SPIKE_SYMBOL
         for hole_position in self.hole_positions:
             self.grid[hole_position] = HOLE_SYMBOL
         self.reward_points = 0
-
+        self.key_collected = False
+        self.chest_collected = False
     def reset(self):
         self.agent.position = (0, 0)
         self.agent.has_key = False
