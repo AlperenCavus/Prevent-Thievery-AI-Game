@@ -4,7 +4,8 @@ import json
 import random
 import heapq
 import math
-
+import matplotlib.pyplot as plt
+import os
 # Initialize pygame
 pygame.init()
 
@@ -504,11 +505,4 @@ def main(difficulty_level):
 if __name__ == "__main__":
     difficulty_level = "hard"  # Specify the difficulty level here (easy, moderate, or hard)
     main(difficulty_level)
-    
-    
-
-    
-        
-
-
     
