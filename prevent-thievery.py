@@ -238,7 +238,7 @@ class GridWorld:
         self.agent.update_position(action)
     
         # Initialize reward
-        reward = REWARDS['empty']
+        reward = 0
     
         # Check if the agent collects the key
         if self.agent.position == self.key_position and not self.agent.has_key:
@@ -246,15 +246,14 @@ class GridWorld:
             self.grid[self.key_position] = EMPTY_SYMBOL
             reward += REWARDS['key']  # Add key reward
     
-        # Check if the agent collects the chest
+       # Check if the agent collects the chest
         if self.agent.position == self.chest_position:
             if self.agent.has_key:
                 self.agent.has_key = False
                 self.grid[self.chest_position] = EMPTY_SYMBOL
-                reward += REWARDS['chest']  # Add chest reward
-                return self.agent.position, reward, False, True
+                reward += REWARDS['chest'] + REWARDS['finish']
             else:
-                return self.agent.position, reward, False, False
+                reward += REWARDS['empty']
     
         # Check if game over due to spike or hole
         if self.agent.position in self.spike_positions:
@@ -271,6 +270,18 @@ class GridWorld:
         if self.agent.position == self.guard.position:
             reward += REWARDS['guard']  # Add guard reward
             return self.agent.position, reward, True, False
+            
+        # Calculate the distance to the key
+        key_distance = abs(self.key_position[0] - self.agent.position[0]) + abs(self.key_position[1] - self.agent.position[1])  
+
+        # Give positive feedback for moving closer to the key
+        if key_distance < self.previous_key_distance:
+            reward += 100
+
+        # Update the previous key distance
+        self.previous_key_distance = key_distance
+
+        
     
         # Apply walking cost
         self.reward_points += reward  # Add the current step reward to total reward points
