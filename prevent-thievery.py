@@ -183,13 +183,42 @@ class GridWorld:
         for hole_position in self.hole_positions:
             self.grid[hole_position] = HOLE_SYMBOL
         self.reward_points = 0     
-          
+        self.key_collected = False
+        self.chest_collected = False  
 
     def is_valid_position(self, position):
         return 0 <= position[0] < GRID_SIZE and 0 <= position[1] < GRID_SIZE
 
     def get_state(self):
-        return self.agent.position
+        # Define the bounds of the observation area
+        observation_area = np.full((5, 5), -1)  # Initialize with -1 for empty cells
+
+        # Calculate the top-left corner of the observation area
+        top_left_x = max(0, self.agent.position[0] - 2)
+        top_left_y = max(0, self.agent.position[1] - 2)
+
+        # Calculate the bottom-right corner of the observation area
+        bottom_right_x = min(GRID_SIZE, self.agent.position[0] + 3)
+        bottom_right_y = min(GRID_SIZE, self.agent.position[1] + 3)
+
+        # Iterate over the observation area and update the state based on grid contents
+        for i in range(top_left_x, bottom_right_x):
+            for j in range(top_left_y, bottom_right_y):
+                if self.grid[i, j] == SPIKE_SYMBOL:
+                    observation_area[i - top_left_x, j - top_left_y] = 0
+                elif self.grid[i, j] == HOLE_SYMBOL:
+                    observation_area[i - top_left_x, j - top_left_y] = 1
+                elif self.grid[i, j] == GUARD_SYMBOL:
+                    observation_area[i - top_left_x, j - top_left_y] = 2
+                elif self.grid[i, j] == CHEST_SYMBOL:
+                    observation_area[i - top_left_x, j - top_left_y] = 3
+                elif self.grid[i, j] == KEY_SYMBOL:
+                    observation_area[i - top_left_x, j - top_left_y] = 4
+                elif self.grid[i, j] == AGENT_SYMBOL:
+                    observation_area[i - top_left_x, j - top_left_y] = 5
+
+        # Return the flattened observation area
+        return observation_area.flatten()
 
     def check_game_over(self):
         if self.agent.position == self.guard.position:
