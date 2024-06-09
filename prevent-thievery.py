@@ -412,51 +412,94 @@ def main(difficulty_level):
     num_episodes = 2500  # Number of episodes for training
     max_steps_per_episode = 500  # Increased episode length to allow for more exploration
 
-    pygame.mixer.music.load('ost.mp3')
-    pygame.mixer.music.set_volume(0.15)
-    pygame.mixer.music.play(-1)
+    screen_width = GRID_SIZE * 50
+    screen_height = GRID_SIZE * 50
+    screen = pygame.display.set_mode((screen_width, screen_height))
 
+    pygame.mixer.music.load('ost.mp3')
+    pygame.mixer.music.set_volume(0.0)
+    pygame.mixer.music.play(-1)
 
     clock = pygame.time.Clock()
     FPS = 3000
+    
+    rewards_epsilon = []
+    episode_rewards_epsilon = []
+    for episode in range(num_episodes):
+        state = grid_world.get_state()
+        total_reward = 0
+        step = 0
+        game_over = False
+        
 
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+        # Run episode until game over or maximum steps reached
+        while not game_over and step < max_steps_per_episode:
+            # Handle events and user inputs
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return
 
-        if not game_over:
-            state = grid_world.get_state()
-            action = agent.choose_action(state, epsilon)
+            # Choose action using epsilon-greedy strategy
+            if np.random.rand() < epsilon:
+                action = np.random.choice(NUM_ACTIONS)  # Explore: choose a random action
+            else:
+                action = np.argmax(Q[state[0], state[1]])  # Exploit: choose the action with the highest Q-value
+
+            # Take action and observe next state and reward
             next_state, reward, done, chest_collected = grid_world.step(action)
 
+            # Update Q-value
             current_q_value = Q[state[0], state[1], action]
-            next_max_q_value = np.max(Q[next_state[0], next_state[1]])
-            new_q_value = current_q_value + 0.1 * (reward + next_max_q_value - current_q_value)
+            if done:
+                next_max_q_value = 0  # Set next_max_q_value to 0 when episode ends
+            else:
+                next_max_q_value = np.amax(Q[next_state[0], next_state[1]])
+            new_q_value = current_q_value + alpha * (reward + discount_factor * next_max_q_value - current_q_value)
             Q[state[0], state[1], action] = new_q_value
-            # Save the updated Q-table to JSON file
-            save_experience('q_table.json', Q.tolist())
-            grid_world.agent.position = next_state
+
+            state = next_state
+            total_reward += reward
+            step += 1
 
             screen.fill((255, 255, 255))
             grid_world.render()
 
             if done:
-                grid_world.reset()
-            elif chest_collected and grid_world.agent.position == (chest_position[0], chest_position[1]):
-                success = True
                 game_over = True
+                grid_world.reset()
+                if chest_collected:
+                    success = True
 
-        else:
-            if success:
-                font = pygame.font.SysFont(None, 55)
-                text = font.render("Successful", True, (0, 255, 0))
-                screen.blit(text, (screen_width // 2 - text.get_width() // 2, screen_height // 2 - text.get_height() // 2))
-                pygame.display.flip()
+            clock.tick(FPS)  # Limit frame rate
 
-        clock.tick(FPS)
+        # Decrement epsilon
+        epsilon -= epsilon * epsilon_decay
+        epsilon = max(epsilon, epsilon_min)
 
-    save_experience('q_table.json', Q.tolist())
+        # Print total reward and steps for the episode
+        print(f"Episode {episode + 1}: Total Reward = {total_reward}, Steps = {step}, Epsilon = {epsilon}")
+
+        # Append total reward to the rewards list
+        rewards_epsilon.append(total_reward)
+        episode_rewards_epsilon.append(reward)  # Store reward for each episode
+        # Save experience at the end of each episode
+        experience = {'Q': Q.tolist()}
+        save_experience(experience_filename, experience)
+
+        grid_world.reset()
+        screen.fill((255, 255, 255))
+        grid_world.render()
+
+
+        # Plot rewards against epsilon values
+    plt.figure(figsize=(10, 5))
+    plt.plot(rewards_epsilon)  # Plot total reward for each episode with changing epsilon
+    plt.xlabel('Episode')
+    plt.ylabel('Total Reward')
+    plt.title('Total Reward vs Episode (Epsilon)')
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
     difficulty_level = "hard"  # Specify the difficulty level here (easy, moderate, or hard)
