@@ -393,13 +393,24 @@ def main(difficulty_level):
     grid_world = GridWorld(agent, guard, chest_position, key_position, spike_positions, hole_positions)
     epsilon = 0.1
 
-    running = True
-    game_over = False
-    success = False
+    # Initialize Q-table
+    Q = np.zeros((GRID_SIZE, GRID_SIZE, NUM_ACTIONS))
+    experience_filename = 'experience.json'
 
-    screen_width = GRID_SIZE * 50
-    screen_height = GRID_SIZE * 50
-    screen = pygame.display.set_mode((screen_width, screen_height))
+    # Load Q-table from file if it exists
+    if os.path.exists(experience_filename):
+        experience = load_experience(experience_filename)
+        Q = np.array(experience['Q'])
+
+    # Q-learning parameters
+    epsilon = 1.0  # Initial epsilon value
+    epsilon_min = 0.1  # Minimum epsilon value
+    epsilon_decay = 0.001  # Decay rate for epsilon 
+    alpha = 0.1  # Learning rate 
+    discount_factor = 0.9  # Discount factor
+
+    num_episodes = 2500  # Number of episodes for training
+    max_steps_per_episode = 500  # Increased episode length to allow for more exploration
 
     pygame.mixer.music.load('ost.mp3')
     pygame.mixer.music.set_volume(0.15)
