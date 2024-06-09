@@ -10,7 +10,7 @@ import os
 pygame.init()
 
 # Define grid world constants
-GRID_SIZE = 15
+GRID_SIZE = 10
 NUM_ACTIONS = 4
 ACTIONS = ['up', 'down', 'left', 'right']
 REWARDS = {'empty': -50, 'key': 500, 'chest': 2000, 'hole': -600, 'spike': -500, 'guard': -900, 'finish': 1200}
