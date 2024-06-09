@@ -281,7 +281,15 @@ class GridWorld:
         # Update the previous key distance
         self.previous_key_distance = key_distance
 
-        
+        # Calculate the distance to the chest
+        chest_distance = abs(self.chest_position[0] - self.agent.position[0]) + abs(self.chest_position[1] - self.agent.position[1])
+
+        # Give positive feedback for moving closer to the chest with the key
+        if chest_distance < self.previous_chest_distance and self.agent.has_key:
+            reward += 200
+
+        # Update the previous chest distance
+        self.previous_chest_distance = chest_distance
     
         # Apply walking cost
         self.reward_points += reward  # Add the current step reward to total reward points
